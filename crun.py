@@ -103,7 +103,7 @@ class Capsule:
 						compiler = "g++"
 					else:
 						compiler = "gcc"
-					os.system(f"cd {self.location} && {compiler} {self.file_name} -o {self.output_name}")
+					os.system(f"cd {self.location} && {compiler} {self.file_name} -o {self.output_name} -lm")
 					os.system(f"cd {self.location} && ./{self.output_name}")
 					print("\n"+10*"--")
 					operation = input(f"[~] ReRun[Ctrl+C]|Quit(Q):[{counter+1}/{runtime}]: ")
