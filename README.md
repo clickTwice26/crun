@@ -25,8 +25,12 @@ pip3 install -r requirements.txt
 ```
 
 ## Usages
+To browse all the c/cpp files and then run the chosen one
+```bash
+python3 crun.py
+```
 
-To run this program:
+To run this program to compile specific c/cpp program:
 ```bash
 python3 crun.py <filename.c/cpp> --reload
 ```

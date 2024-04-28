@@ -13,6 +13,16 @@ default_config = {
 }
 def clear():
 	os.system('cls' if os.name == 'nt' else 'clear')
+def file_viewer(dir=os.getcwd()):
+	counter = 0
+	valid_file_list = []
+	for i in os.listdir(dir):
+		if i.endswith('.c') or i.endswith('.cpp'):
+			print(f"[{counter}] {i}")
+			valid_file_list.append(i)
+			counter+=1
+	print("\n")
+	return valid_file_list
 def ctime(wdm:str="both"):
 	now = datetime.now()
 	dt_string = now.strftime("%d/%m/%y %H:%M:%S").split(" ")
@@ -46,6 +56,7 @@ class Capsule:
 		self.file_name = file_name
 		self.output_name = output_name
 		self.extra_command = extra_command
+		print(self.extra_command)
 	def clearouts(self):
 		paths = os.getcwd()
 		out_files = []
@@ -106,7 +117,7 @@ class Capsule:
 					os.system(f"cd {self.location} && {compiler} {self.file_name} -o {self.output_name} -lm")
 					os.system(f"cd {self.location} && ./{self.output_name}")
 					print("\n"+10*"--")
-					operation = input(f"[~] ReRun[Ctrl+C]|Quit(Q):[{counter+1}/{runtime}]: ")
+					operation = input(f"[~] ReRun[Ctrl+C]|Quit(Q)\nSave[s] FileViewer[f] [{counter+1}/{runtime}]: ")
 					if operation == "q":
 
 						os.remove(self.location+"/"+self.output_name)
@@ -125,6 +136,39 @@ class Capsule:
 							print("File saved in saves folder")
 							time.sleep(20)
 						except KeyboardInterrupt:
+							continue
+					elif operation == "f":
+						counter = 0
+						max_counter = 100000
+						message = ""
+						while True:
+							clear()
+							all_files = file_viewer()
+							counter += 1
+							try:
+								if message != "":
+									print("=>" + message)
+								selection = input(
+									f"Reload[Ctrl+C] Quit[q/Q] Counter[{counter}/{max_counter}]\nSelect File:")
+								if selection.lower() == 'q':
+									break
+								elif int(selection) in range(0, len(all_files)):
+									# print(all_files[int(selection)])
+									message = f"Selected File: {all_files[int(selection)]}"
+									self.file_name = all_files[int(selection)]
+									break
+
+								else:
+									message = "File Not Found"
+							except KeyboardInterrupt:
+
+								clear()
+								message = "File list refreshed"
+								continue
+							except Exception as error:
+								clear()
+								message = f"Invalid Selection: {selection}"
+								continue
 							continue
 
 				except Exception as error:
@@ -158,8 +202,36 @@ if __name__ == "__main__":
 		file_name = file_name if file_name.endswith(".c") or file_name.endswith(".cpp") else file_name+".c"
 		clog("[+] Session started")
 	except Exception as error:
-		print("[+] Please provide enough information")
-		sys.exit("[-] Program Exit")
+		counter = 0
+		max_counter = 100000
+		message = ""
+		while True:
+			clear()
+			all_files = file_viewer()
+			counter += 1
+			try:
+				if message != "":
+					print("=>" + message)
+				selection = input(f"Reload[Ctrl+C] Quit[q/Q] Counter[{counter}/{max_counter}]\nSelect File:")
+				if selection.lower() == 'q':
+					# break
+					sys.exit()
+				elif int(selection) in range(0, len(all_files)):
+					# print(all_files[int(selection)])
+					message = f"Selected File: {all_files[int(selection)]}"
+					file_name = all_files[int(selection)]
+					extra_command = "--reload"
+					break
+				else:
+					message = "File Not Found"
+			except KeyboardInterrupt:
+
+				clear()
+				continue
+			except Exception as error:
+				clear()
+				message = f"Invalid Selection: {selection}"
+				continue
 
 	file_location = os.getcwd()
 	try:
@@ -173,5 +245,6 @@ if __name__ == "__main__":
 
 
 	# Capsule Start
+
 	crunch = Capsule(file_location, file_name, file_output_name, extra_command)
 	crunch.crun()
