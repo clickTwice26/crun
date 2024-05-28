@@ -116,7 +116,7 @@ class Capsule:
 						compiler = "gcc"
 					os.system(f"cd {self.location} && {compiler} {self.file_name} -o {self.output_name} -lm")
 					os.system(f"cd {self.location} && ./{self.output_name}")
-					print("\n"+10*"--")
+					print("\n" + 5 * "--" + f"[{self.file_name}]" + 5 * "--")
 					operation = input(f"[~] ReRun[Ctrl+C]|Quit(Q)\nSave[s] FileViewer[f] [{counter+1}/{runtime}]: ")
 					if operation == "q":
 
