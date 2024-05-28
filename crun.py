@@ -6,11 +6,14 @@ import time
 from datetime import datetime
 from random import randint
 cwd = os.getcwd()
+
 session_code = randint(1000, 1000000)
+
 default_config = {
 	"build_command": "gcc [file_name] -o [output_name]",
 	"run_command": "./[output_name]"
 }
+
 def clear():
 	os.system('cls' if os.name == 'nt' else 'clear')
 def file_viewer(dir=os.getcwd()):
@@ -20,10 +23,10 @@ def file_viewer(dir=os.getcwd()):
 		if i.endswith('.c') or i.endswith('.cpp'):
 			print(f"[{counter}] {i}")
 			valid_file_list.append(i)
-			counter+=1
+			counter += 1
 	print("\n")
 	return valid_file_list
-def ctime(wdm:str="both"):
+def ctime(wdm:str = "both"):
 	now = datetime.now()
 	dt_string = now.strftime("%d/%m/%y %H:%M:%S").split(" ")
 	if wdm == "date":
@@ -32,7 +35,12 @@ def ctime(wdm:str="both"):
 		return dt_string[1]
 	else:
 		return " ".join(dt_string)
-
+def default_log():
+	# need a default configuration loader whenever needed
+	pass
+def update_checking(): #it will check update weekly and daily
+	#there should be a another machenism to update itself
+	pass
 def cloader(configname: str):
 	try:
 		config_data = load(open(f"{cwd}/{configname}", "r"))
@@ -242,9 +250,6 @@ if __name__ == "__main__":
 		file_output_name = f"{file_name}_{randint(1, 1000)}.out"
 	print(sys.argv)
 
-
-
 	# Capsule Start
-
 	crunch = Capsule(file_location, file_name, file_output_name, extra_command)
 	crunch.crun()
