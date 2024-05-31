@@ -25,12 +25,12 @@ pip3 install -r requirements.txt
 ```
 
 ## Usages
-To browse all the c/cpp files and then run the chosen one
-    ##Linux/Mac
+To browse all the c/cpp files and then run the chosen one.
+##Linux/Mac
 ```bash
 python3 crun.py
 ```
-    ##Windows
+##Windows
 ```bash
 python3 cwin.py
 ```
