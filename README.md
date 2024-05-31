@@ -18,7 +18,9 @@ Need to install python (version 3+), if you are in linux you don't have to do it
 
     
 ## Requirements
-    [1] Not for now
+    gcc
+    g++
+
 ### Requirements installation
 ```bash
 pip3 install -r requirements.txt
