@@ -7,9 +7,9 @@ from crun import debugMsg
 dbPrefix = "[MANAGER] "
 debugMsg("Use this Carefully", "error", dbPrefix)
 
-debugMsg(f"Argvs: {argv}", "info", dbPrefix)
+# debugMsg(f"Argvs: {argv}", "info", dbPrefix)
 options = list(set([x[1:] for x in argv if x.startswith('-')]))
-debugMsg(f"Options: {options}", "info", dbPrefix)
+# debugMsg(f"Options: {options}", "info", dbPrefix)
 
 class Manager:
     def __init__(self, options: list, args : list,location:str=os.getcwd()):
@@ -32,13 +32,33 @@ class Manager:
                     for i in fileList:
                         os.remove(f'{self.location}/{i}')
                         debugMsg(f"Removed {i}", "info", dbPrefix)
+            if option == "setup":
+                self.setup()
 
     def clearouts(self):
         fileList = [i for i in os.listdir(self.location) if i.endswith('.out')]
         for i in fileList:
             os.remove(f'{self.location}/{i}')
             debugMsg(f"Removed {i}", "info", dbPrefix)
+    def selfValidation(self):
+        fileList = os.listdir(self.location)
+        validationReport = 0
+        for i in fileList:
+            if i in ["crun.py", "manage.py"]:
+                validationReport += 1
+        if validationReport >= 2:
+            debugMsg("Necessary files are there", "success", dbPrefix)
+            return True
+        else:
+            debugMsg("Missing files", "error", dbPrefix)
+            return False
 
+    def setup(self):
+        if self.selfValidation():
+            debugMsg("Starting setup of crun", "info", dbPrefix)
+        else:
+            pass
+            # debugMsg("Missing files", "error", dbPrefix)
 # time.sleep(2)
 if len(options) == 0:
     debugMsg("All options are here: ", "info", dbPrefix)

@@ -14,7 +14,22 @@ default_config = {
 	"build_command": "gcc [file_name] -o [output_name]",
 	"run_command": "./[output_name]"
 }
-
+def cout(message : str, type : str = "info"):
+	if type in ["info", "warning", "error"]:
+		prefix = "[OUT] "
+	elif type == "input":
+		prefix = "[IN] "
+	else:
+		prefix = "[NULL] "
+	if type == "info":
+		colorType = Back.RED
+	elif type == "error":
+		colorType = Back.RED
+	elif type == "warning":
+		colorType = Back.YELLOW
+	else:
+		colorType = Back.GREEN
+	print(Fore.CYAN + prefix + Style.RESET_ALL + colorType + message + Style.RESET_ALL, end="")
 def clear():
 	os.system('cls' if os.name == 'nt' else 'clear')
 def checkFileName(fileName: str) -> bool:
@@ -54,6 +69,7 @@ def debugMsg(message:str, category:str = "info", prefix: str="[DEBUG]=>"):
 		msgColor = Fore.RED
 	elif category == "warning":
 		msgColor = Fore.BLUE
+
 	else:
 		msgColor = Fore.GREEN
 
@@ -86,7 +102,7 @@ def clog(comment, error=None):
 			clogger.write(logStr+"\n")
 			clogger.close()
 	except Exception as error:
-		print(f"[?] Error faced while writing logs | session_code: {session_code} | current_time: {ctime()}")
+		cout(f"[?] Error faced while writing logs | session_code: {session_code} | current_time: {ctime()}", "error")
 		time.sleep(3)
 class Capsule:
 	def __init__(self, location, file_name, output_name, extra_command=None) -> None:
@@ -124,7 +140,7 @@ class Capsule:
 		else:
 
 			clear()
-			print("[+] No files to clearout")
+			debugMsg("[+] No files to clearout", "warning")
 			sys.exit()
 	def file_validation(self):
 		if os.path.exists(self.location):
@@ -143,16 +159,14 @@ class Capsule:
 
 	def crun(self):
 		if self.extra_command == "--reload":
-			print("[+] Reload mode added")
+			debugMsg("[+] Reload mode added", "success")
 			runtime = 10000
 		else:
 			runtime = 1
 		if self.extra_command == "--clearout":
 			self.clearouts()
- 
-
 		counter = 0
-		print("Runtime: {}".format(runtime))
+		# cout("Runtime: {}".format(runtime), "info")
 
 		while counter < runtime:
 			if self.file_validation():
@@ -167,17 +181,21 @@ class Capsule:
 					#debugMsg(f"Compiling Command: {compileCommand}")
 					os.system(compileCommand)
 					os.system(f"cd {self.location} && ./{self.output_name}")
+					# cout(f"Filename: {self.file_name}\tRuntime: {runtime}\n", "success")
 					print("\n" + 5 * "--" + f"[{self.file_name}]" + 5 * "--")
-					operation = input(f"[~] ReRun[Ctrl+C]|Quit(Q)\nSave[s] FileViewer[f] [{counter+1}/{runtime}]: ")
+					cout(f"[~] ReRun[Ctrl+C]|Quit(Q)\nSave[s] FileViewer[f] [{counter+1}/{runtime}]: ", "input")
+					operation = input()
 					if operation == "q":
 
 						# os.remove(self.location+"/"+self.output_name)
 						os.remove(self.outputFileLocation)
 						debugMsg(f"{self.outputFileLocation} removed", "info")
+						cout(f"Program Exited\n", "info")
 						break
 					elif operation == "s":
 						try:
-							save_file_name = input(f"[~] Save File name: ")
+							cout(f"[~] Save File name: ", "input")
+							save_file_name = input()
 						except KeyboardInterrupt:
 							save_file_name = self.file_name.split(".")[0]+str(randint(1,10000))+".c"
 						try:
@@ -188,8 +206,9 @@ class Capsule:
 							os.mkdir(f"{self.location}/saves/")
 							shutil.copy(f"{self.location}/{self.file_name}", f"{self.location}/saves/{save_file_name}")
 						try:
-							debugMsg("File saved in saves folder", category="info")
-							time.sleep(20)
+							cout("File saved in saves folder\n", type="success")
+							time.sleep(10)
+
 						except KeyboardInterrupt:
 							continue
 					elif operation == "f":
@@ -203,11 +222,13 @@ class Capsule:
 							try:
 								if message != "":
 									print("=>" + message)
-								selection = input(
-									f"Reload[Ctrl+C] Quit[q/Q] Counter[{counter}/{max_counter}]\nSelect File:")
+								cout(f"Refresh[Ctrl+C]\tQuit[q/Q]\tCounter[{counter}/{max_counter}]\nSelect File:", "input")
+								selection = input()
 								if selection.lower() == 'q':
-									self.clearouts()
-									break
+									# self.clearouts()
+
+									cout("Quit", "info")
+									exit()
 								elif int(selection) in range(0, len(all_files)):
 									# print(all_files[int(selection)])
 									message = f"Selected File: {all_files[int(selection)]}"
@@ -234,10 +255,10 @@ class Capsule:
 					counter+=1
 
 					if counter == runtime:
-						print(f"\nExited because you told to run {counter} times")
+						cout(f"\nExited because you told to run {counter} times\n", "warning")
 					continue
 			else:
-				print("File or Path not found")
+				cout("File or Path not found", "error")
 				break
 
 
@@ -270,10 +291,11 @@ if __name__ == "__main__":
 			try:
 				if message != "":
 					print("=>" + message)
-				selection = input(f"Reload[Ctrl+C] Quit[q/Q] Counter[{counter}/{max_counter}]\nSelect File:")
+				cout(f"Reload[Ctrl+C] Quit[q/Q] Counter[{counter}/{max_counter}]\nSelect File:", "input")
+				selection = input()
 				if selection.lower() == 'q':
 					# break
-
+					cout("Program Exited\n", "info")
 					sys.exit()
 				elif int(selection) in range(0, len(all_files)):
 					# print(all_files[int(selection)])
@@ -299,7 +321,6 @@ if __name__ == "__main__":
 	except IndexError:
 		print(f"[+] Default file output name selected: {file_name}_{randint(1, 1000)}")
 		file_output_name = f"{file_name}_{randint(1, 1000)}.out"
-	print(sys.argv)
 
 	# Capsule Start
 	crunch = Capsule(file_location, file_name, file_output_name, extra_command)
