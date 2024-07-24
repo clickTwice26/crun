@@ -48,7 +48,6 @@ def ctime(wdm:str = "both"):
 
 
 def debugMsg(message:str, category:str = "info", prefix: str="[DEBUG]=>"):
-	return 0
 	if category == "info":
 		msgColor = Fore.CYAN
 	elif category == "error":
@@ -93,12 +92,12 @@ class Capsule:
 	def __init__(self, location, file_name, output_name, extra_command=None) -> None:
 		self.location = location
 		if not checkFileName(file_name):
-			debugMsg("Filename has 'space'", "warning")
-			debugMsg("Trying to fix", "info")
+			#debugMsg("Filename has 'space'", "warning")
+			#debugMsg("Trying to fix", "info")
 			prefix = "'"
 			self.file_name = prefix + file_name + prefix
 			self.output_name = prefix + output_name + prefix
-			debugMsg(f"after fixing {self.file_name} | {self.output_name}", "info")
+			#debugMsg(f"after fixing {self.file_name} | {self.output_name}", "info")
 			self.sourceFileLocation = f"{self.location}/{file_name}"
 			self.outputFileLocation = f"{self.location}/{output_name}"
 		else:
@@ -165,7 +164,7 @@ class Capsule:
 					else:
 						compiler = "gcc"
 					compileCommand = f"cd {self.location} && {compiler} {self.file_name} -o {self.output_name} -lm"
-					debugMsg(f"Compiling Command: {compileCommand}")
+					#debugMsg(f"Compiling Command: {compileCommand}")
 					os.system(compileCommand)
 					os.system(f"cd {self.location} && ./{self.output_name}")
 					print("\n" + 5 * "--" + f"[{self.file_name}]" + 5 * "--")
@@ -189,7 +188,7 @@ class Capsule:
 							os.mkdir(f"{self.location}/saves/")
 							shutil.copy(f"{self.location}/{self.file_name}", f"{self.location}/saves/{save_file_name}")
 						try:
-							print("File saved in saves folder")
+							debugMsg("File saved in saves folder", category="info")
 							time.sleep(20)
 						except KeyboardInterrupt:
 							continue
