@@ -43,6 +43,10 @@ def ctime(wdm:str = "both"):
 	else:
 		return " ".join(dt_string)
 
+
+
+
+
 def debugMsg(message:str, category:str = "info", prefix: str="[DEBUG]=>"):
 	return 0
 	if category == "info":
@@ -57,7 +61,11 @@ def debugMsg(message:str, category:str = "info", prefix: str="[DEBUG]=>"):
 	print(msgColor+ prefix + message + Style.RESET_ALL)
 	# time.sleep(1)
 
-
+def clearouts(location):
+	fileList = [i for i in os.listdir(location) if i.endswith('.out')]
+	for i in fileList:
+		os.remove(f'{location}/{i}')
+		debugMsg(f"Removed {i}", "info")
 def default_log():
 	# need a default configuration loader whenever needed
 	pass
@@ -174,8 +182,10 @@ class Capsule:
 						except KeyboardInterrupt:
 							save_file_name = self.file_name.split(".")[0]+str(randint(1,10000))+".c"
 						try:
-							shutil.copy(f"{self.location}/{self.file_name}", f"{self.location}/saves/{save_file_name}")
+							#shutil.copy(f"{self.location}/{self.file_name}", f"{self.location}/saves/{save_file_name}")
+							shutil.copy(f"{self.sourceFileLocation}", f"{self.location}/saves/{save_file_name}")
 						except Exception as error:
+							debugMsg(error, "error")
 							os.mkdir(f"{self.location}/saves/")
 							shutil.copy(f"{self.location}/{self.file_name}", f"{self.location}/saves/{save_file_name}")
 						try:

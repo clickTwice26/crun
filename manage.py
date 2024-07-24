@@ -31,7 +31,7 @@ if len(options) == 0:
     print("""usage: manage.py [options]\noptions:
     \t-clearouts =\tclear all .out files in current directory.
     \t-zipSave =\tarchive the 'saves' directory into a single zip file
-    
+    \t-setup =\tsetup system-wide (only for linux system)
     example:
     \t python3 manage.py -clearouts 
     """)
