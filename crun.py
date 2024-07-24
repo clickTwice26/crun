@@ -5,6 +5,7 @@ import sys
 import time
 from datetime import datetime
 from random import randint
+from colorama import Fore, Back, Style, init
 cwd = os.getcwd()
 
 session_code = randint(1000, 1000000)
@@ -16,6 +17,12 @@ default_config = {
 
 def clear():
 	os.system('cls' if os.name == 'nt' else 'clear')
+def checkFileName(fileName: str) -> bool:
+	fileName = fileName.split(" ")
+	if len(fileName) != 1:
+		return False
+	else:
+		return True
 def file_viewer(dir=os.getcwd()):
 	counter = 0
 	valid_file_list = []
@@ -35,6 +42,22 @@ def ctime(wdm:str = "both"):
 		return dt_string[1]
 	else:
 		return " ".join(dt_string)
+
+def debugMsg(message:str, category:str = "info", prefix: str="[DEBUG]=>"):
+	return 0
+	if category == "info":
+		msgColor = Fore.CYAN
+	elif category == "error":
+		msgColor = Fore.RED
+	elif category == "warning":
+		msgColor = Fore.BLUE
+	else:
+		msgColor = Fore.GREEN
+
+	print(msgColor+ prefix + message + Style.RESET_ALL)
+	# time.sleep(1)
+
+
 def default_log():
 	# need a default configuration loader whenever needed
 	pass
@@ -61,10 +84,22 @@ def clog(comment, error=None):
 class Capsule:
 	def __init__(self, location, file_name, output_name, extra_command=None) -> None:
 		self.location = location
-		self.file_name = file_name
-		self.output_name = output_name
+		if not checkFileName(file_name):
+			debugMsg("Filename has 'space'", "warning")
+			debugMsg("Trying to fix", "info")
+			prefix = "'"
+			self.file_name = prefix + file_name + prefix
+			self.output_name = prefix + output_name + prefix
+			debugMsg(f"after fixing {self.file_name} | {self.output_name}", "info")
+			self.sourceFileLocation = f"{self.location}/{file_name}"
+			self.outputFileLocation = f"{self.location}/{output_name}"
+		else:
+			self.sourceFileLocation = f"{self.location}/{file_name}"
+			self.outputFileLocation = f"{self.location}/{output_name}"
+
+			self.file_name = file_name
+			self.output_name = output_name
 		self.extra_command = extra_command
-		print(self.extra_command)
 	def clearouts(self):
 		paths = os.getcwd()
 		out_files = []
@@ -74,10 +109,10 @@ class Capsule:
 		if len(out_files) >= 1:
 			for i in os.listdir(paths):
 				if i.endswith(".out"):
-					os.remove(f"{paths}/{i}")
+					os.remove(f"'{paths}/{i}'")
 
 			clear()
-			print("[+] Cleared .out files")
+			debugMsg("[+] Cleared .out files")
 			sys.exit()
 		else:
 
@@ -86,15 +121,14 @@ class Capsule:
 			sys.exit()
 	def file_validation(self):
 		if os.path.exists(self.location):
-			# print("PATH EXISTS")
-			if os.path.isfile(self.location+"/"+self.file_name):
-				# print("FILE EXISTS")
+			if os.path.isfile(self.sourceFileLocation):
 				return True
 			else:
-				print(f"[+] File does not exist. {self.location}/{self.file_name}")
+				# debugMsg(f"[+] File does not exist. {self.location}/{self.file_name}", "error")
+				debugMsg(f"[+] File does not exist. {self.sourceFileLocation}", "error")
 				return False
 		else:
-			print(f"[+] Path does not exist. {self.location}")
+			debugMsg(f"[+] Path does not exist. {self.location}", error)
 			return False
 
 
@@ -122,13 +156,17 @@ class Capsule:
 						compiler = "g++"
 					else:
 						compiler = "gcc"
-					os.system(f"cd {self.location} && {compiler} {self.file_name} -o {self.output_name} -lm")
+					compileCommand = f"cd {self.location} && {compiler} {self.file_name} -o {self.output_name} -lm"
+					debugMsg(f"Compiling Command: {compileCommand}")
+					os.system(compileCommand)
 					os.system(f"cd {self.location} && ./{self.output_name}")
 					print("\n" + 5 * "--" + f"[{self.file_name}]" + 5 * "--")
 					operation = input(f"[~] ReRun[Ctrl+C]|Quit(Q)\nSave[s] FileViewer[f] [{counter+1}/{runtime}]: ")
 					if operation == "q":
 
-						os.remove(self.location+"/"+self.output_name)
+						# os.remove(self.location+"/"+self.output_name)
+						os.remove(self.outputFileLocation)
+						debugMsg(f"{self.outputFileLocation} removed", "info")
 						break
 					elif operation == "s":
 						try:
@@ -159,6 +197,7 @@ class Capsule:
 								selection = input(
 									f"Reload[Ctrl+C] Quit[q/Q] Counter[{counter}/{max_counter}]\nSelect File:")
 								if selection.lower() == 'q':
+									self.clearouts()
 									break
 								elif int(selection) in range(0, len(all_files)):
 									# print(all_files[int(selection)])
@@ -180,7 +219,7 @@ class Capsule:
 							continue
 
 				except Exception as error:
-					print(f"[+] Error Faced: {error}")
+					debugMsg(f"[+] Error Faced: {error}", "error")
 					break
 				except KeyboardInterrupt:
 					counter+=1
@@ -194,6 +233,8 @@ class Capsule:
 
 
 if __name__ == "__main__":
+	init()
+	debugMsg("Program Started", "error")
 	if len(sys.argv) > 1:
 		print("Entered")
 		for i in sys.argv:
@@ -223,6 +264,7 @@ if __name__ == "__main__":
 				selection = input(f"Reload[Ctrl+C] Quit[q/Q] Counter[{counter}/{max_counter}]\nSelect File:")
 				if selection.lower() == 'q':
 					# break
+
 					sys.exit()
 				elif int(selection) in range(0, len(all_files)):
 					# print(all_files[int(selection)])
