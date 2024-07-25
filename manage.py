@@ -9,8 +9,15 @@ import os
 import shutil
 
 dbPrefix = "[MANAGER] "
-debugMsg("Use this Carefully", "error", dbPrefix)
-
+# debugMsg("Use this Carefully", "error", dbPrefix)
+helpMessage = ("""usage: manage.py [options]\noptions:
+\t-clearouts\t=\tclear all .out files in current directory.
+\t-zipSave\t=\tarchive the 'saves' directory into a single zip file
+\t-removes <.extension>\t=\tremove all files in current directory with given extension.
+\t-setup\t=\tsetup system-wide (only for linux system)
+example:
+\tpython3 manage.py -clearouts 
+""")
 def check_file_permissions(file_path):
     if os.access(file_path, os.R_OK):
         # print(f"Read permission is granted for file: {file_path}")
@@ -25,7 +32,7 @@ def check_file_permissions(file_path):
     return False
 def is_root():
     return os.getuid() == 0
-debugMsg(f"Argvs: {argv}", "info", dbPrefix)
+# debugMsg(f"Argvs: {argv}", "info", dbPrefix)
 options = list(set([x[1:] for x in argv if x.startswith('-')]))
 # debugMsg(f"Options: {options}", "info", dbPrefix)
 def uniqueFolderName(directoryLocation: str, folderName: str) -> str:
@@ -76,6 +83,8 @@ class Manager:
                     return None
                 else:
                     self.zipSave(value)
+            if option == "help":
+                print(helpMessage)
     def clearouts(self):
         fileList = [i for i in os.listdir(self.location) if i.endswith('.out')]
         for i in fileList:
@@ -162,19 +171,12 @@ class Manager:
             cout(f"{error}", "error")
 # time.sleep(2)
 if len(options) == 0:
-    cout("Invalid options", "warning")
     cout("Loading Options in 2 secs", "info")
     time.sleep(2)
     os.system("clear")
 
-    print("""usage: manage.py [options]\noptions:
-    \t-clearouts =\tclear all .out files in current directory.
-    \t-zipSave =\tarchive the 'saves' directory into a single zip file
-    \t-removes <.extension> =\tremove all files in current directory with given extension.
-    \t-setup =\tsetup system-wide (only for linux system)
-    example:
-    \tpython3 manage.py -clearouts 
-    """)
+
+    print(helpMessage)
 else:
     manager = Manager(options, argv, location=os.getcwd())
 

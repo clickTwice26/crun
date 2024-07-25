@@ -95,6 +95,7 @@ def cloader(configname: str):
 		print(f"[?] Configuration couldnot loaded | Config_Name : {configname}")
 		clog(f"config couldn't loaded. config_name: {configname}")
 def clog(comment, error=None):
+	return None
 	logStr = f"[+|{session_code}] {ctime()} | {comment}  {f'| Error:{error}' if error else ''}"
 	print(logStr)
 	try:
