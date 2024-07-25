@@ -204,14 +204,16 @@ class Capsule:
 							save_file_name = self.file_name.split(".")[0]+str(randint(1,10000))+".c"
 						try:
 							#shutil.copy(f"{self.location}/{self.file_name}", f"{self.location}/saves/{save_file_name}")
-							shutil.copy(f"{self.sourceFileLocation}", f"{self.location}/saves/{save_file_name}")
+							# cout(f"COPY COMMAND: {self.sourceFileLocation}"  f"{os.getcwd()}/saves/{save_file_name}")
+							shutil.copy(f"{self.sourceFileLocation}", f"{os.getcwd()}/saves/{save_file_name}")
 						except Exception as error:
-							debugMsg(error, "error")
-							os.mkdir(f"{self.location}/saves/")
-							shutil.copy(f"{self.location}/{self.file_name}", f"{self.location}/saves/{save_file_name}")
+							# debugMsg(error, "error")
+							cout(f"SAVES directory not found. Creating one at {os.getcwd()}/saves", "warning")
+							os.mkdir(f"{os.getcwd()}/saves/")
+							shutil.copy(self.sourceFileLocation, f"{os.getcwd()}/saves/{save_file_name}")
 						try:
 							cout("File saved in saves folder\n", type="success")
-							time.sleep(10)
+							time.sleep(1)
 
 						except KeyboardInterrupt:
 							continue
