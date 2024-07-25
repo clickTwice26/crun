@@ -1,16 +1,46 @@
-import time
+from crun import debugMsg, cout
 from sys import argv, exit
 from colorama import Fore, Back, Style
+from random import randint
+import sys
 import time
+import subprocess
 import os
-from crun import debugMsg
+import shutil
+
 dbPrefix = "[MANAGER] "
 debugMsg("Use this Carefully", "error", dbPrefix)
 
-# debugMsg(f"Argvs: {argv}", "info", dbPrefix)
+def check_file_permissions(file_path):
+    if os.access(file_path, os.R_OK):
+        # print(f"Read permission is granted for file: {file_path}")
+        if os.access(file_path, os.W_OK):
+            # print(f"Write permission is granted for file: {file_path}")
+
+
+            if os.access(file_path, os.X_OK):
+                cout("Exec Permission granted", "success")
+                time.sleep(1)
+                return True
+    return False
+def is_root():
+    return os.getuid() == 0
+debugMsg(f"Argvs: {argv}", "info", dbPrefix)
 options = list(set([x[1:] for x in argv if x.startswith('-')]))
 # debugMsg(f"Options: {options}", "info", dbPrefix)
+def uniqueFolderName(directoryLocation: str, folderName: str) -> str:
+    fileList = os.listdir(directoryLocation)
+    counter = 0
+    while counter < 100:
+        if folderName in fileList:
+            folderName = folderName+str(randint(0, 1000))
+            counter += 1
+            continue
+        else:
+            return folderName
 
+def clearScr():
+    os.system("clear")
 class Manager:
     def __init__(self, options: list, args : list,location:str=os.getcwd()):
         self.options = options
@@ -34,7 +64,18 @@ class Manager:
                         debugMsg(f"Removed {i}", "info", dbPrefix)
             if option == "setup":
                 self.setup()
+            if option == "zipSave":
+                try:
+                    value = args[args.index("-zipSave") + 1]
+                except IndexError as e:
+                    debugMsg("No zip name given. Selecting a random name", "error", dbPrefix)
+                    value = None
 
+                if str(value).endswith(".py"):
+                    debugMsg("You cannot purge .py files", "error", dbPrefix)
+                    return None
+                else:
+                    self.zipSave(value)
     def clearouts(self):
         fileList = [i for i in os.listdir(self.location) if i.endswith('.out')]
         for i in fileList:
@@ -52,16 +93,80 @@ class Manager:
         else:
             debugMsg("Missing files", "error", dbPrefix)
             return False
+    def requirementsCheck(self):
+        aptList = [
+            "sed"
 
+        ]
+        pipList = [
+            "colorama"
+        ]
+        for i in aptList:
+            cout(f"Tried to install {i}", "info")
+            os.system(f"sudo apt install {i} >> report.txt")
+        for i in pipList:
+            cout(f"Tried to install {i}", "info")
+            os.system(f"pip3 install {i} >> report.txt")
+        cout("Requirement check completed.", "info")
+        cout(f"{os.getcwd()}/report.txt saved", "info")
     def setup(self):
         if self.selfValidation():
+            if not is_root() == 0:
+                pass
+            else:
+                cout("Please run this with 'sudo' permission", "error")
+                exit()
             debugMsg("Starting setup of crun", "info", dbPrefix)
+            # self.requirementsCheck()
+            time.sleep(1)
+            cout("Creating Executable file", "info")
+
+
+            command = "whereis python3"
+            result = subprocess.check_output(command, shell=True, text=True)
+            firstLine = result.split(" ")[1]
+            firstLine = "#!"+firstLine
+            try:
+                crunCode = open(f"{os.getcwd()}/crun.py", "r").read()
+                totalCode = firstLine+"\n"+crunCode
+                try:
+                    with open(f"/usr/local/bin/crun", "w") as f:
+                        f.write(totalCode)
+                        f.close()
+                except Exception as error:
+                    cout(f"{error}", "error")
+                cout(f"Executable files created", "info")
+            except Exception as error:
+                cout(f"{error}", "error")
+                sys.exit(1)
+
+
         else:
-            pass
-            # debugMsg("Missing files", "error", dbPrefix)
+            debugMsg("Missing files", "error", dbPrefix)
+    def zipSave(self, output_name=None):
+        savesDir = f"{os.getcwd()}/saves"
+        if output_name == None:
+            zipOutputName = uniqueFolderName(os.getcwd(), f"{str(randint(0,100))}_saves.zip")
+        else:
+            if output_name.endswith(".zip"):
+                zipOutputName = output_name
+            else:
+                zipOutputName = f"{output_name}.zip"
+            zipOutputName = uniqueFolderName(savesDir, zipOutputName)
+
+
+        cout(f"Creating zip file with the name of '{zipOutputName}'", "info")
+        try:
+           shutil.make_archive(zipOutputName, "zip", savesDir)
+        except Exception as error:
+            cout(f"{error}", "error")
 # time.sleep(2)
 if len(options) == 0:
-    debugMsg("All options are here: ", "info", dbPrefix)
+    cout("Invalid options", "warning")
+    cout("Loading Options in 2 secs", "info")
+    time.sleep(2)
+    os.system("clear")
+
     print("""usage: manage.py [options]\noptions:
     \t-clearouts =\tclear all .out files in current directory.
     \t-zipSave =\tarchive the 'saves' directory into a single zip file

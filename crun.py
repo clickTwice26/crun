@@ -22,14 +22,14 @@ def cout(message : str, type : str = "info"):
 	else:
 		prefix = "[NULL] "
 	if type == "info":
-		colorType = Back.RED
+		colorType = Back.CYAN
 	elif type == "error":
 		colorType = Back.RED
 	elif type == "warning":
 		colorType = Back.YELLOW
 	else:
 		colorType = Back.GREEN
-	print(Fore.CYAN + prefix + Style.RESET_ALL + colorType + message + Style.RESET_ALL, end="")
+	print(Fore.CYAN + prefix + Style.RESET_ALL + colorType + message + Style.RESET_ALL, end="\n")
 def clear():
 	os.system('cls' if os.name == 'nt' else 'clear')
 def checkFileName(fileName: str) -> bool:
@@ -188,8 +188,11 @@ class Capsule:
 					if operation == "q":
 
 						# os.remove(self.location+"/"+self.output_name)
-						os.remove(self.outputFileLocation)
-						debugMsg(f"{self.outputFileLocation} removed", "info")
+						try:
+							os.remove(self.outputFileLocation)
+							debugMsg(f"{self.outputFileLocation} removed", "info")
+						except Exception as error:
+							debugMsg(f"{self.output_name} couldn't removed", "error")
 						cout(f"Program Exited\n", "info")
 						break
 					elif operation == "s":
@@ -255,7 +258,12 @@ class Capsule:
 					counter+=1
 
 					if counter == runtime:
-						cout(f"\nExited because you told to run {counter} times\n", "warning")
+						try:
+							os.remove(self.outputFileLocation)
+							debugMsg(f"{self.outputFileLocation} removed", "info")
+						except Exception as error:
+							debugMsg(f"{self.output_name} couldn't removed", "error")
+						cout(f"Program Exited\n", "info")
 					continue
 			else:
 				cout("File or Path not found", "error")
@@ -265,17 +273,15 @@ class Capsule:
 if __name__ == "__main__":
 	init()
 	debugMsg("Program Started", "error")
-	if len(sys.argv) > 1:
-		print("Entered")
-		for i in sys.argv:
-			if i.startswith("--"):
-				extra_command = i
-				break
-		# print(extra_command)
-		# sys.exit(f"{extra_command} not found")
+	debugMsg(f"Argvs : {sys.argv}", "info")
+
+	options = [x for x in sys.argv if x.startswith("--")]
+
+	#param = sys.argv
+	if len(options) > 0:
+		extra_command = options[0]
 	else:
 		extra_command = "None"
-	#param = sys.argv
 	try:
 		file_name = sys.argv[1]
 		file_name = file_name if file_name.endswith(".c") or file_name.endswith(".cpp") else file_name+".c"
@@ -323,5 +329,9 @@ if __name__ == "__main__":
 		file_output_name = f"{file_name}_{randint(1, 1000)}.out"
 
 	# Capsule Start
-	crunch = Capsule(file_location, file_name, file_output_name, extra_command)
-	crunch.crun()
+	try:
+		crunch = Capsule(file_location, file_name, file_output_name, extra_command)
+
+		crunch.crun()
+	except Exception as error:
+		debugMsg(str(error), "error")
