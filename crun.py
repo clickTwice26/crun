@@ -326,13 +326,12 @@ if __name__ == "__main__":
 		file_output_name = sys.argv[2] if not sys.argv[2].startswith("--") else f"{file_name}_{randint(1, 1000)}.out"
 		file_output_name = file_output_name if file_output_name.endswith(".out") else file_output_name+".out"
 	except IndexError:
-		print(f"[+] Default file output name selected: {file_name}_{randint(1, 1000)}")
+		cout(f"[+] Default file output name selected: {file_name}_{randint(1, 1000)}", "info")
 		file_output_name = f"{file_name}_{randint(1, 1000)}.out"
 
 	# Capsule Start
 	try:
 		crunch = Capsule(file_location, file_name, file_output_name, extra_command)
-
 		crunch.crun()
 	except Exception as error:
 		debugMsg(str(error), "error")

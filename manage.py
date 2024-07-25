@@ -1,4 +1,4 @@
-from crun import debugMsg, cout
+from crun import debugMsg, cout, ctime
 from sys import argv, exit
 from colorama import Fore, Back, Style
 from random import randint
@@ -129,26 +129,35 @@ class Manager:
             # self.requirementsCheck()
             time.sleep(1)
             cout("Creating Executable file", "info")
-
-
             command = "whereis python3"
             result = subprocess.check_output(command, shell=True, text=True)
-            firstLine = result.split(" ")[1]
-            firstLine = "#!"+firstLine
+            execDir = result.split(" ")[1]
+            firstLine = "#!"+execDir
+            binDir = "/usr/local/bin"
+            setupCred = f"""\"\"\"This was setup by manage.py in {ctime("both")}\"\"\""""
             try:
                 crunCode = open(f"{os.getcwd()}/crun.py", "r").read()
-                totalCode = firstLine+"\n"+crunCode
+                manageCode = open(f"{os.getcwd()}/manage.py", "r").read()
+                totalCRUNCode =  firstLine+"\n"+ setupCred + "\n" +crunCode
+                totalMANAGECode =   firstLine+"\n"+ setupCred+ "\n"+ manageCode
+
                 try:
-                    with open(f"/usr/local/bin/crun", "w") as f:
-                        f.write(totalCode)
+                    with open(f"{binDir}/crun", "w") as f:
+                        f.write(totalCRUNCode)
                         f.close()
+                    with open(f"{binDir}/cmanage", "w") as f:
+                        f.write(totalMANAGECode)
+                        f.close()
+                    cout(f"Executable files created", "info")
+                    os.system(f"sudo chmod +x {binDir}/crun")
+                    os.system(f"sudo chmod +x {binDir}/cmanage")
+                    cout("Executable permission given to the files", "success")
+                    cout("Crun & Cmanage setup completed", "success")
                 except Exception as error:
                     cout(f"{error}", "error")
-                cout(f"Executable files created", "info")
             except Exception as error:
                 cout(f"{error}", "error")
                 sys.exit(1)
-
 
         else:
             debugMsg("Missing files", "error", dbPrefix)
