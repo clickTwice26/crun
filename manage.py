@@ -12,7 +12,7 @@ dbPrefix = "[MANAGER] "
 # debugMsg("Use this Carefully", "error", dbPrefix)
 helpMessage = ("""usage: manage.py [options]\noptions:
 \t-clearouts\t=\tclear all .out files in current directory.
-\t-zipSave\t=\tarchive the 'saves' directory into a single zip file
+\t-zipSave\t<zipname>\t=\tarchive the 'saves' directory into a single zip file
 \t-removes <.extension>\t=\tremove all files in current directory with given extension.
 \t-setup\t=\tsetup system-wide (only for linux system)
 example:
