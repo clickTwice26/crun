@@ -28,7 +28,7 @@ def cout(message : str, type : str = "info"):
 	elif type == "warning":
 		colorType = Back.YELLOW
 	else:
-		colorType = Back.GREEN
+		colorType = Back.CYAN
 	print(Fore.CYAN + prefix + Style.RESET_ALL + colorType + message + Style.RESET_ALL, end="\n")
 def clear():
 	os.system('cls' if os.name == 'nt' else 'clear')
@@ -178,10 +178,10 @@ class Capsule:
 						compiler = "g++"
 					else:
 						compiler = "gcc"
-					compileCommand = f"cd {self.location} && {compiler} {self.file_name} -o {self.output_name} -lm"
+					compileCommand = f"cd '{self.location}' && {compiler} {self.file_name} -o {self.output_name} -lm"
 					#debugMsg(f"Compiling Command: {compileCommand}")
 					os.system(compileCommand)
-					os.system(f"cd {self.location} && ./{self.output_name}")
+					os.system(f"cd '{self.location}' && ./{self.output_name}")
 					# cout(f"Filename: {self.file_name}\tRuntime: {runtime}\n", "success")
 					print("\n" + 5 * "--" + f"[{self.file_name}]" + 5 * "--")
 					cout(f"[~] ReRun[Ctrl+C]|Quit(Q)\nSave[s] FileViewer[f] [{counter+1}/{runtime}]: ", "input")
