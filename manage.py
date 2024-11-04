@@ -1,4 +1,4 @@
-from crun import debugMsg, cout, ctime
+# from crun import debugMsg, cout, ctime
 from sys import argv, exit
 from colorama import Fore, Back, Style
 from random import randint
@@ -7,7 +7,45 @@ import time
 import subprocess
 import os
 import shutil
+from datetime import datetime
+def cout(message : str, type : str = "info"):
+	if type in ["info", "warning", "error"]:
+		prefix = "[OUT] "
+	elif type == "input":
+		prefix = "[IN] "
+	else:
+		prefix = "[NULL] "
+	if type == "info":
+		colorType = Back.CYAN
+	elif type == "error":
+		colorType = Back.RED
+	elif type == "warning":
+		colorType = Back.YELLOW
+	else:
+		colorType = Back.CYAN
+	print(Fore.CYAN + prefix + Style.RESET_ALL + colorType + message + Style.RESET_ALL, end="\n")
+def ctime(wdm:str = "both"):
+	now = datetime.now()
+	dt_string = now.strftime("%d/%m/%y %H:%M:%S").split(" ")
+	if wdm == "date":
+		return dt_string[0]
+	elif wdm == "time":
+		return dt_string[1]
+	else:
+		return " ".join(dt_string)
+def debugMsg(message:str, category:str = "info", prefix: str="[DEBUG]=>"):
+	if category == "info":
+		msgColor = Fore.CYAN
+	elif category == "error":
+		msgColor = Fore.RED
+	elif category == "warning":
+		msgColor = Fore.BLUE
 
+	else:
+		msgColor = Fore.GREEN
+
+	print(msgColor+ prefix + message + Style.RESET_ALL)
+	# time.sleep(1)
 dbPrefix = "[MANAGER] "
 # debugMsg("Use this Carefully", "error", dbPrefix)
 helpMessage = ("""usage: manage.py [options]\noptions:

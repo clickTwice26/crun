@@ -76,6 +76,7 @@ def debugMsg(message:str, category:str = "info", prefix: str="[DEBUG]=>"):
 	print(msgColor+ prefix + message + Style.RESET_ALL)
 	# time.sleep(1)
 
+
 def clearouts(location):
 	fileList = [i for i in os.listdir(location) if i.endswith('.out')]
 	for i in fileList:
