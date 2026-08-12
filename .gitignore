@@ -6,3 +6,5 @@
 /notneeded
 /saves
 /crun.log
+*.out
+venv/
