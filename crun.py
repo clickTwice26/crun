@@ -3,6 +3,7 @@ from json import load, loads, dumps, dump
 import os
 import sys
 import time
+import subprocess as sb
 from datetime import datetime
 from random import randint
 from colorama import Fore, Back, Style, init
@@ -14,6 +15,14 @@ default_config = {
 	"build_command": "gcc [file_name] -o [output_name]",
 	"run_command": "./[output_name]"
 }
+def run_command(*args, **kwargs) -> str:
+    print(args)
+    print(kwargs)
+    sb.run()
+    
+    
+    return "-test-"
+    
 def cout(message : str, type : str = "info"):
 	if type in ["info", "warning", "error"]:
 		prefix = "[OUT] "
@@ -31,7 +40,9 @@ def cout(message : str, type : str = "info"):
 		colorType = Back.CYAN
 	print(Fore.CYAN + prefix + Style.RESET_ALL + colorType + message + Style.RESET_ALL, end="\n")
 def clear():
-	os.system('cls' if os.name == 'nt' else 'clear')
+	# ; depriciated
+ 	# os.system('cls' if os.name == 'nt' else 'clear')
+	sb.run('cls' if os.name == 'nt' else 'clear') # migrated to sb from os.system
 def checkFileName(fileName: str) -> bool:
 	fileName = fileName.split(" ")
 	if len(fileName) != 1:
@@ -48,6 +59,8 @@ def file_viewer(dir=os.getcwd()):
 			counter += 1
 	print("\n")
 	return valid_file_list
+
+
 def ctime(wdm:str = "both"):
 	now = datetime.now()
 	dt_string = now.strftime("%d/%m/%y %H:%M:%S").split(" ")
@@ -173,7 +186,7 @@ class Capsule:
 		while counter < runtime:
 			if self.file_validation():
 				try:
-					os.system("clear")
+					clear()
 					print(10 * "--")
 					if self.file_name.endswith(".cpp"):
 						compiler = "g++"

@@ -8,6 +8,27 @@ import subprocess
 import os
 import shutil
 from datetime import datetime
+from crun import clear, run_command
+import json
+
+    
+
+def throw_error(exp: Exception, message : str, traceback : bool = True):
+    raise Exception(f"message\n{exp}")
+def writeUpdate(*args, **kwargs) -> bool:
+    try:
+        update_message : str = kwargs.get("update_message", "No update message given")
+        update_type : str = kwargs.get("update_type")
+        version_number : float = args[0] if args[0] else throw_error(ValueError, "version_number not passed")
+        isDebug : bool = kwargs.get("debug", False)
+        if isDebug:
+            debugMsg(
+                json.dumps(kwargs)
+            )
+            
+    except Exception as error:
+        cout(message=
+             f"""`writeUpdate()` Incomplete information, please resolve \n {error}""", type="error")
 def cout(message : str, type : str = "info"):
 	if type in ["info", "warning", "error"]:
 		prefix = "[OUT] "
@@ -49,10 +70,10 @@ def debugMsg(message:str, category:str = "info", prefix: str="[DEBUG]=>"):
 dbPrefix = "[MANAGER] "
 # debugMsg("Use this Carefully", "error", dbPrefix)
 helpMessage = ("""usage: manage.py [options]\noptions:
-\t-clearouts\t=\tclear all .out files in current directory.
-\t-zipSave\t<zipname>\t=\tarchive the 'saves' directory into a single zip file
-\t-removes <.extension>\t=\tremove all files in current directory with given extension.
-\t-setup\t=\tsetup system-wide (only for linux system)
+\t-clearouts\t;clear all .out files in current directory.
+\t-zipSave <zipname>\t;archive the 'saves' directory into a single zip file
+\t-removes <.extension>\t;remove all files in current directory with given extension.
+\t-setup\t;setup system-wide (only for linux system)
 example:
 \tpython3 manage.py -clearouts 
 """)
@@ -72,7 +93,7 @@ def is_root():
     return os.getuid() == 0
 # debugMsg(f"Argvs: {argv}", "info", dbPrefix)
 options = list(set([x[1:] for x in argv if x.startswith('-')]))
-# debugMsg(f"Options: {options}", "info", dbPrefix)
+debugMsg(f"Options: {options}", "info", dbPrefix)
 def uniqueFolderName(directoryLocation: str, folderName: str) -> str:
     fileList = os.listdir(directoryLocation)
     counter = 0
@@ -85,7 +106,8 @@ def uniqueFolderName(directoryLocation: str, folderName: str) -> str:
             return folderName
 
 def clearScr():
-    os.system("clear")
+    run_command('cls')
+    run_command('clear')
 class Manager:
     def __init__(self, options: list, args : list,location:str=os.getcwd()):
         self.options = options
@@ -123,6 +145,10 @@ class Manager:
                     self.zipSave(value)
             if option == "help":
                 print(helpMessage)
+            if option == "test":
+                cout("test detected")
+                writeUpdate(0.1, debug=True)
+            
     def clearouts(self):
         fileList = [i for i in os.listdir(self.location) if i.endswith('.out')]
         for i in fileList:
@@ -217,13 +243,14 @@ class Manager:
         except Exception as error:
             cout(f"{error}", "error")
 # time.sleep(2)
-if len(options) == 0:
-    cout("Loading Options in 2 secs", "info")
-    time.sleep(2)
-    os.system("clear")
+if __name__ == "__main__":
+    if len(options) == 0:
+        cout("Loading Options in 2 secs", "info")
+        # time.sleep(2)
+        clear()
 
 
-    print(helpMessage)
-else:
-    manager = Manager(options, argv, location=os.getcwd())
+        print(helpMessage)
+    else:
+        manager = Manager(options, argv, location=os.getcwd())
 

@@ -8,3 +8,5 @@
 /crun.log
 *.out
 venv/
+*.pyc
+__pycache__
